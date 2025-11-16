@@ -1,5 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
+import json
+import os
+from pathlib import Path
 
 class Window(tk.Toplevel):
     def __init__(self, parent):
@@ -18,6 +22,7 @@ class App(tk.Tk):
         super().__init__()
 
         self.load_config()
+        print(self.class_list)
 
         self.geometry('300x200')
         self.title('Correc_Cop')
@@ -40,7 +45,7 @@ class App(tk.Tk):
         
         self.load_class_button = ttk.Button(self,
                 text='Charger une classe',
-                command=self.input)
+                command=self.load_class)
         
         self.input_button = ttk.Button(self,
                 text='Saisir les notes',
@@ -74,14 +79,12 @@ class App(tk.Tk):
     #chage la config
     def load_config(self):
         try:
-            fich=open('config.cfg')
-            self.class_list=[]
-            for line in fich:
-                self.class_list.append(line)
-            self.class_list=tk.Variable(self.class_list)
+            with open('config.json') as fich:
+                self.params  = json.load(fich)
         except:
-            "Pas de fichier config.cfg"
-        
+            print("Pas de fichier config.cfg ou problème de lecture")
+        self.class_list=tk.Variable(value=[])
+        self.load_class(open_window = False)
         
 
     # Les actions
@@ -94,9 +97,19 @@ class App(tk.Tk):
     def report(self):
         window = Window(self)
         window.grab_set()
-    def load_class(self):
-        window = Window(self)
-        window.grab_set()
+    def load_class(self,open_window = True):
+        #select path
+        if open_window:
+            #Select file
+            path = filedialog.askopenfilename(filetypes=(("Text files", "*.txt"),('All files', '*.*')),
+                                              initialdir = os.path.realpath(os.path.dirname(__file__))) #initialdir=Path(sys.executable).parent
+        else:
+            path = self.params["class_file"]
+        with open(path,encoding='utf-8') as fichier:
+            liste =[]
+            for line in fichier:
+                liste.append(line.strip('\n'))
+            self.class_list.set(liste)
     def input(self):
         window = Window(self)
         window.grab_set()
