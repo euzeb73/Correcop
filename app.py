@@ -3,7 +3,8 @@ from tkinter import ttk
 from tkinter import filedialog
 import json
 import os
-from pathlib import Path
+
+from input_grade import Input_grade
 
 class Window(tk.Toplevel):
     def __init__(self, parent):
@@ -22,26 +23,32 @@ class App(tk.Tk):
         super().__init__()
 
         self.load_config()
-        print(self.class_list)
 
-        self.geometry('300x200')
+        self.geometry('320x400')
         self.title('Correc_Cop')
         icon_image = tk.PhotoImage(file='Cocop_ico.png')
         self.iconphoto(True, icon_image)
+        #Background
+        bg = tk.Label( self, image = icon_image)
+        bg.place(x = 0, y = 0)
 
         # Les buttons
-        self.new_DS_button = ttk.Button(self,
+
+        # Un cadre pour les 2 premiers bouttons
+        frame = ttk.Frame(self)
+        
+        self.new_DS_button = ttk.Button(frame,
                 text='Nouveau DS',
                 command=self.new_DS)
         
-        self.new_DS_button.state(['disabled'])
-        self.load_DS_button = ttk.Button(self,
+        self.load_DS_button = ttk.Button(frame,
                 text='Charger DS',
                 command=self.load_DS)
         
         self.report_button = ttk.Button(self,
                 text='BILAN',
                 command=self.report)
+        self.report_button.state(['disabled'])
         
         self.load_class_button = ttk.Button(self,
                 text='Charger une classe',
@@ -50,10 +57,11 @@ class App(tk.Tk):
         self.input_button = ttk.Button(self,
                 text='Saisir les notes',
                 command=self.input)
+        self.input_button.state(['disabled'])
 
         listbox = tk.Listbox(self,
                             listvariable=self.class_list,
-                            height=3,
+                            height=6,
                             selectmode=tk.BROWSE,
                             )
         
@@ -62,21 +70,34 @@ class App(tk.Tk):
                                     command=listbox.yview
                                     )
         listbox['yscrollcommand'] = v_scrollbar.set
-        label = ttk.Label(self, 
-                            text='Élève:'
+        listbox.bind('<<ListboxSelect>>', self.pupil_selected) #pour autoriser à saisir les notes si eleve selectionné
+        listbox.bind('<Double-1>', self.input) # pour lancer la saisie de snotes par dble click sur nom
+        label_eleve = ttk.Label(self, 
+                            text='Élève:',
+                            font = ("Palatino",14)
+                        )
+        label_DS = ttk.Label(self, 
+                            textvariable = self.current_DS_affichage,
+                            font = ("Palatino",14)
                         )
         
         #Placement des bouttons
-        self.new_DS_button.pack(expand=True)
+        #Plus tard peut être sur une grille
+        
+        
+        label_DS.pack(expand=True)
+        frame.pack(expand=True)
+        self.new_DS_button.pack(expand=True,side= tk.LEFT)
         self.load_DS_button.pack(expand=True)
         self.report_button.pack(expand=True)
         self.load_class_button.pack(expand=True)
+        label_eleve.pack(expand = False, side=tk.LEFT,padx=10)
+        listbox.pack(expand = False,side=tk.LEFT,pady=10)
+        v_scrollbar.pack(side=tk.LEFT, fill=tk.Y,pady=10)
         self.input_button.pack(expand=True)
-        label.pack(expand = False, side=tk.LEFT,padx=10)
-        listbox.pack(expand = False,side=tk.LEFT)
-        v_scrollbar.pack(side=tk.LEFT)
+        
 
-    #chage la config
+    #charge la config
     def load_config(self):
         try:
             with open('config.json') as fich:
@@ -85,12 +106,16 @@ class App(tk.Tk):
             print("Pas de fichier config.cfg ou problème de lecture")
         self.class_list=tk.Variable(value=[])
         self.load_class(open_window = False)
-        
+        self.current_DS = self.params["last_DS"]
+        self.current_DS_affichage = tk.Variable ( value = f"DS en cours d'édition: {self.current_DS}")
 
     # Les actions
     def new_DS(self):
-        window = Window(self)
-        window.grab_set()
+        path = filedialog.askopenfilename(filetypes=(("Text files", "*.txt"),('All files', '*.*')),
+                                              initialdir = os.path.realpath(os.path.dirname(__file__)))
+        self.current_DS = os.path.basename(path)
+        self.current_DS_affichage.set(f"DS en cours d'édition: {self.current_DS}")
+
     def load_DS(self):
         window = Window(self)
         window.grab_set()
@@ -103,6 +128,8 @@ class App(tk.Tk):
             #Select file
             path = filedialog.askopenfilename(filetypes=(("Text files", "*.txt"),('All files', '*.*')),
                                               initialdir = os.path.realpath(os.path.dirname(__file__))) #initialdir=Path(sys.executable).parent
+            if not(path): #If cancel is clicked
+                return #Do nothing
         else:
             path = self.params["class_file"]
         with open(path,encoding='utf-8') as fichier:
@@ -110,8 +137,11 @@ class App(tk.Tk):
             for line in fichier:
                 liste.append(line.strip('\n'))
             self.class_list.set(liste)
-    def input(self):
-        window = Window(self)
+    def pupil_selected(self,event):
+        #Alors on peut saisir les notes
+        self.input_button.state(['!disabled'])
+    def input(self,event=''):
+        window = Input_grade(self)
         window.grab_set()
 
 
