@@ -134,8 +134,12 @@ class App(tk.Tk):
             path = self.params["class_file"]
         with open(path,encoding='utf-8') as fichier:
             liste =[]
+            self.tiertps = []
             for line in fichier:
-                liste.append(line.strip('\n'))
+                ligne=line.split(',')
+                liste.append(ligne[0])
+                if len(ligne)>1:
+                    self.tiertps.append(int(ligne[1]))
             self.class_list.set(liste)
     def pupil_selected(self,event):
         #Alors on peut saisir les notes

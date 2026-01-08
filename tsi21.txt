@@ -1,35 +1,35 @@
-ADOBATI Mathias
-ALESSANDRIA Gabriel
-ARIAS Julien
-ARVIEUX Romain
-AUVRARD Nathanaël
-BERTHIER Rudy
-BOCQUET Raphaël
-BROCA Julien
-CHASLES Matys
-DEL RIO Nathan
-DERUE Hippolyte
-DOS SANTOS Ran
-DOZISSARD Adam
-DREVET-PERRIN Lilian
-FAIX Nolann
-GANDIA Ethan
-GAUDIN Delphine
-GONÇALVES Samuel
-KLEIN Estéban
-LENOBLE Aymeric
-MARCHIORI Nathan
-MASICH Kyrylo
-MELOT Arthur
-MERKHACH Marouane
-MERMILLOD Timéo
-MUGNIER Keyran
-NIANGA MBESH Nathan
-ORTIZ Esteban
-OUMRANI Ilyas
-PERRAUD Mathias
-REINAUD Louison
-RIVIER Nolan
-ROBIN Evan
-SPIGA Akram
-TATAR Darius
+ADOBATI Mathias,0
+ALESSANDRIA Gabriel,0
+ARIAS Julien,0
+ARVIEUX Romain,0
+AUVRARD Nathanaël,0
+BERTHIER Rudy,0
+BOCQUET Raphaël,1
+BROCA Julien,0
+CHASLES Matys,0
+DEL RIO Nathan,0
+DERUE Hippolyte,0
+DOS SANTOS Ran,0
+DOZISSARD Adam,0
+DREVET-PERRIN Lilian,0
+FAIX Nolann,1
+GANDIA Ethan,0
+GAUDIN Delphine,0
+GONÇALVES Samuel,0
+KLEIN Estéban,0
+LENOBLE Aymeric,0
+MARCHIORI Nathan,1
+MASICH Kyrylo,0
+MELOT Arthur,0
+MERKHACH Marouane,0
+MERMILLOD Timéo,1
+MUGNIER Keyran,0
+NIANGA MBESH Nathan,0
+ORTIZ Esteban,0
+OUMRANI Ilyas,0
+PERRAUD Mathias,0
+REINAUD Louison,0
+RIVIER Nolan,0
+ROBIN Evan,0
+SPIGA Akram,0
+TATAR Darius,0
