@@ -22,6 +22,8 @@ class Input_grade(tk.Toplevel):
         self.animation = None
         self.nb_times_gif_played = 3
 
+        #L'image de fond vide pour remplacer les gifs
+        self.empty_img = tk.PhotoImage(file='vide.png')
         #Clavier
         self.bind('<Key>',self.key_handler)
 
@@ -114,6 +116,7 @@ class Input_grade(tk.Toplevel):
             else:
                 self.after_cancel(self.animation)
                 gif.reset()
+                self.img_label.config(image= self.empty_img)
         else:
             if self.animation is not None:
                 self.after_cancel(self.animation)

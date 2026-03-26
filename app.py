@@ -1,11 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+from tkinter.messagebox import showerror
 import json
 import os
 
-from input_grade import Input_grade
 
+from input_grade import Input_grade
+from create_DS import Create_DS
 class Window(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -111,14 +113,15 @@ class App(tk.Tk):
 
     # Les actions
     def new_DS(self):
+        window = Create_DS(self)
+        window.grab_set()
+        
+    def load_DS(self):
         path = filedialog.askopenfilename(filetypes=(("Text files", "*.txt"),('All files', '*.*')),
-                                              initialdir = os.path.realpath(os.path.dirname(__file__)))
+                                         initialdir = os.path.realpath(os.path.dirname(__file__)))
         self.current_DS = os.path.basename(path)
         self.current_DS_affichage.set(f"DS en cours d'édition: {self.current_DS}")
 
-    def load_DS(self):
-        window = Window(self)
-        window.grab_set()
     def report(self):
         window = Window(self)
         window.grab_set()
@@ -145,8 +148,11 @@ class App(tk.Tk):
         #Alors on peut saisir les notes
         self.input_button.state(['!disabled'])
     def input(self,event=''):
-        window = Input_grade(self)
-        window.grab_set()
+        if self.current_DS is not None:
+            window = Input_grade(self)
+            window.grab_set()
+        else:
+            showerror(title='Erreur',message = "Il faut d'abord charger un DS ou créer un DS avant d'entrer les notes")
 
 
 if __name__ == "__main__":

@@ -2,13 +2,18 @@ import tkinter as tk
 from PIL import Image, ImageTk
 
 class Gif():
-    def __init__(self,filename):
+    def __init__(self,filename,size=220):
+        """
+        Default height 220 pix 
+        """
         try:
             im = Image.open(filename)
             self.frames = []
             for i in range(im.n_frames):
                 im.seek(i)
-                photo = ImageTk.PhotoImage(im.convert("RGBA"))
+                w,h = im.size
+                photo = ImageTk.PhotoImage(im.convert("RGBA").resize((round(220/h*w),220)))
+                photo.__reduce__()
                 self.frames.append(photo)
             self.nb_frames = len(self.frames)
             self.current_frame_index = 0
