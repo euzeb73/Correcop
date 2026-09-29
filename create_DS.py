@@ -1,13 +1,26 @@
 import tkinter as tk
 from tkinter import ttk
+
+"""
+
+TODO (Plus tard): importer parties et alphabet du fichier config.json
+"""
+
 PARTIES = ['I','II','III','IV','V','VI','VII','VIII','IX','X']
 ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
 
 class Noeud():
     def __init__(self,parent,name,data = None):
-        self.parent = parent
+        self.parent = parent 
         self.children = []
         self.name = name
+        if name != 'Root':
+            if parent.fullname:
+                self.fullname = parent.fullname+' ' +name
+            else:
+                self.fullname = name
+        else:
+            self.fullname = ''
         self.data = data # ça peut être le barême
     def add_child(self,child):
         self.children.append(child)
@@ -40,16 +53,42 @@ class Arbre():
         if noeud.children:
             for child in noeud.children:
                 self.parcours_print(child,profondeur+1)
+    def arbre_to_json(self):
+        pass
     def get_question_list(self):
+        """
+        Renvoie la liste des question et la liste des data (barême)
+        """
         return self.parcours_enprof(self.root)
-    def parcours_enprof(self,noeud: Noeud):
+    def parcours_enprof(self,noeud : Noeud):
+        """
+        Fonction récursive de parcour de l'arbre qui renvoie la liste des noms des noeuds et des data
+        """
         if noeud.children:
-            liste=[]
+            listeq = []
+            listedata = []
             for child in noeud.children:
-                liste.extend(self.parcours_enprof(child))
-            return liste     
+                listeq.extend(self.parcours_enprof(child)[0])
+                listedata.extend(self.parcours_enprof(child)[1])
+            return listeq,listedata     
         else:
-            return [noeud.name]
+            return [noeud.fullname],[noeud.data]
+    def add_bareme(self,bareme):
+        """
+        Modifie les data des feuilles (questions) avec la liste des valeurs dans bareme
+        ATENTION : détruit la liste bareme
+        Pas de test pour voir si on a bien autant de notes que de feuilles (questions)
+        """
+        self.add_bareme_recurs(self.root,bareme)
+    def add_bareme_recurs(self,noeud : Noeud,bareme):
+        if noeud.children:
+            for child in noeud.children:
+                self.add_bareme_recurs(child,bareme)
+        else:
+            note = bareme.pop(0)
+            noeud.data = note
+            
+
 
 
 
@@ -63,9 +102,14 @@ class Create_DS(tk.Toplevel):
         self.geometry('900x250')
         self.title('Nouveau DS')
         self.validate_DS_button = ttk.Button(self,
-                text='Valider',
-                command=self.export_tree)
+                text='Valider et passer au barême',
+                command=self.enter_bareme)
         self.validate_DS_button.pack(expand=True,pady=5,side=tk.BOTTOM)
+        # self.cancel = ttk.Button(self,
+        #         text='Annuler et recommencer',
+        #         command=self.init_parties)
+        # self.cancel.pack(expand=True,pady=5,side=tk.BOTTOM)
+        
         #Le nb de parties
         frame = tk.Frame(self)
         label = tk.Label(frame,text='Nombre de parties  ',font=("Palatino",14))
@@ -100,7 +144,9 @@ class Create_DS(tk.Toplevel):
         self.init_parties()
         
     def init_parties(self):
-        
+        """
+        Initialise et prépare pour entrer le nb de parties, exos, questions
+        """
         for i,spinbox in enumerate(self.spinbox_parties_list):
             spinbox.destroy()
             self.label_parties_list[i].destroy()
@@ -121,7 +167,11 @@ class Create_DS(tk.Toplevel):
             spinbox.pack(side=tk.LEFT,fill = None,padx=1)#side=tk.BOTTOM
         self.cadre_parties.pack()
         self.init_exos()
+
     def init_exos(self):
+        """
+        Initialise et prépare pour rentrer le nb d'exos et de questions (apppelé par init_parties)
+        """
         for i,spinbox in enumerate(self.spinbox_exos_list):
             spinbox.destroy()
             self.label_exos_list[i].destroy()
@@ -138,7 +188,9 @@ class Create_DS(tk.Toplevel):
         for i,spinbox in enumerate(self.spinbox_exos_list):
             self.label_exos_list[i].pack(side=tk.LEFT,fill = None,padx=5)
             spinbox.pack(side=tk.LEFT,fill = None,padx=1)
+
     def export_tree(self):
+        """ Crée l'arbre de DS d'après les valeurs rentrées"""
         arbre = Arbre()
         for i in range(int(self.n_parties.get())):
             arbre.root.create_child(PARTIES[i])
@@ -157,6 +209,44 @@ class Create_DS(tk.Toplevel):
                     exo.create_child(ALPHABET[k]+")")
             offset += nb_exo_partie
         arbre.print()
+        return arbre
+
+    def enter_bareme(self):
+        arbre = self.export_tree()
+        window = Bareme(self,arbre)
+        window.grab_set()
+
+
+class Bareme(tk.Toplevel):
+    def __init__(self, parent, arbre : Arbre):
+        super().__init__(parent)
+        self.arbre = arbre
+        self.geometry('900x250')
+        self.title('Barême')
+        self.validate_bareme_button = ttk.Button(self,
+                text='Valider le barême',
+                command=self.validate)
+        self.validate_bareme_button.pack(expand=True,pady=5,side=tk.BOTTOM)
+        self.validate_bareme_button.state(['disabled'])
+        questions, bareme = self.arbre.parcours_enprof(self.arbre.root) # pour l'instant bareme est probablement rempli de None
+        ################
+        # TODO : utiliser le résultat de vibe pour insérer un tableau questio baremen éditable
+        ################
+
+    def bareme_is_OK(self):
+        """
+        Test si le barême est OK (des nombres partout)
+        A appeler on change des spinbox ou autre.
+        """
+        return True
+    def validate(self):
+        """
+        A executer quand on a fini de rentrer le bareme
+        """
+        pass
+
+
+
 
 
 if __name__ == "__main__":
@@ -177,4 +267,7 @@ if __name__ == "__main__":
     arbre_test.root.children[1].children[0].create_child("a)",0.5)
     arbre_test.root.children[1].children[1].create_child("a)",2)
     arbre_test.print()
+    bareme=[1,2,3,4,5,6,7,8]
+    arbre_test.add_bareme(bareme)
     print(arbre_test.get_question_list())
+    arbre_test.print()

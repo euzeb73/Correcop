@@ -17,7 +17,7 @@ class Dsresults:
             self.notes = dico["notes"]
 
     def check_structure(self):
-        pass
+        return True
     def load_students(self):
         pass
 

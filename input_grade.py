@@ -4,12 +4,6 @@ import ttkwidgets
 import glob
 from gif import Gif
 
-# TODO:
-# Faire une place dans la fenetre pour des appréciations perso:
-# Genre horreur ou arrrrrrghhh, bien, non homogène, c'est du cours ! avec éventuellement Gif et son 
-
-
-
 class Input_grade(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)

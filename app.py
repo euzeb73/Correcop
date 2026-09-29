@@ -4,7 +4,7 @@ from tkinter import filedialog
 from tkinter.messagebox import showerror
 import json
 import os
-
+from ttkthemes import ThemedTk
 
 from input_grade import Input_grade
 from create_DS import Create_DS
@@ -20,10 +20,11 @@ class Window(tk.Toplevel):
                 command=self.destroy).pack(expand=True)
 
 
+# class App(ThemedTk):
 class App(tk.Tk):
     def __init__(self):
+        # super().__init__(theme="yaru") # Pour appli avec theme
         super().__init__()
-
         self.load_config()
 
         self.geometry('320x400')
@@ -117,7 +118,7 @@ class App(tk.Tk):
         window.grab_set()
         
     def load_DS(self):
-        path = filedialog.askopenfilename(filetypes=(("Text files", "*.txt"),('All files', '*.*')),
+        path = filedialog.askopenfilename(filetypes=(("Data files", "*.json"),("Text files", "*.txt"),('All files', '*.*')),
                                          initialdir = os.path.realpath(os.path.dirname(__file__)))
         self.current_DS = os.path.basename(path)
         self.current_DS_affichage.set(f"DS en cours d'édition: {self.current_DS}")
